@@ -1,0 +1,31 @@
+{
+  "name": "WIP Name - Sentiment Analysis Extension",
+  "description": "Displays sentiment information on social media responses.",
+  "manifest_version": 3,
+  "version": "0.1.0",
+  "permissions": ["tabs"],
+  "host_permissions": ["https://*.youtube.com/*", "http://localhost:8000/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://youtube.com/*",
+        "*://www.youtube.com/*",
+        "*://m.youtube.com/*"
+      ],
+      "js": ["youtube.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "*://youtube.com/*",
+        "*://www.youtube.com/*",
+        "*://m.youtube.com/*"
+      ],
+      "resources": ["images/*.png", "images/*.gif"]
+    }
+  ]
+}
