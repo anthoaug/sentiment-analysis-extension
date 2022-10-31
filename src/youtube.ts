@@ -1,27 +1,91 @@
-import "./background"
+import Chart from "chart.js/auto";
 
 const update_queue: Map<String, HTMLImageElement> = new Map();
-let comments: Map<String, String>;
+let comments: Map<String, String> | null;
+
+observer();
 
 document.addEventListener("yt-navigate-finish", function (event: Event) {
+    document.getElementById("sentiment-chart")?.remove();
+    comments = null;
+
     const videoId = new URLSearchParams(window.location.search).get("v");
     if (videoId == null) return;
 
-    observer();
+    const below = document.getElementById("below")!;
+
+    const canvas: HTMLCanvasElement = document.createElement("canvas");
+    // canvas.style.border = "1px solid black";
+    canvas.width = below.clientWidth;
+    canvas.id = "sentiment-chart";
+    canvas.height = 25;
+
+    below.insertBefore(canvas, below.querySelector("#comments"));
 
     fetch("http://localhost:8000/extension/youtube/" + videoId + "/")
         .then(response => response.json())
         .then(data => {
-            comments = new Map(Object.entries(data));
+            comments = new Map(Object.entries(data["sentiments"]));
 
             update_queue.forEach((sentimentImage: HTMLImageElement, commentId: String) => {
-                let sentiment = comments.get(commentId);
+                let sentiment = comments!.get(commentId);
                 if (sentiment == null) sentiment = "unknown";
 
                 sentimentImage.src = chrome.runtime.getURL("images/" + sentiment + "16.png");
             })
+
+            initChart(canvas, data["counts"]);
         });
 })
+
+function initChart(canvas: HTMLCanvasElement, counts: { [_: string]: number; }) {
+    new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: [''],
+            datasets: [
+                {
+                    label: "Positive",
+                    data: [counts["positive"]],
+                    backgroundColor: "#00FF00"
+                },
+                {
+                    label: "Negative",
+                    data: [counts["negative"]],
+                    backgroundColor: "#FF0000"
+                },
+                {
+                    label: "Neutral",
+                    data: [counts["neutral"]],
+                    backgroundColor: "#9F9F9F"
+                }
+            ]
+        },
+        options: {
+            indexAxis: "y",
+            responsive: true,
+            scales: {
+                x: {
+                    display: false,
+                    stacked: true,
+                    beginAtZero: true
+                },
+                y: {
+                    display: false,
+                    stacked: true,
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    displayColors: false
+                }
+            }
+        }
+    });
+}
 
 function observer() {
     const config = {childList: true, subtree: true};
@@ -49,7 +113,7 @@ function observer() {
                 image.id = "sentiment";
                 image.classList.add("style-scope", "ytd-comment-action-buttons-renderer");
 
-                if (comments == undefined) {
+                if (comments == null) {
                     image.src = chrome.runtime.getURL("images/loading16.gif");
                     update_queue.set(commentId, image);
                 } else {
@@ -66,4 +130,3 @@ function observer() {
 
     observer.observe(document, config);
 }
-
