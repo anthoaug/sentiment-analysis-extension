@@ -16,6 +16,13 @@
         "*://m.youtube.com/*"
       ],
       "js": ["youtube.js"]
+    },
+    {
+      "matches": [
+        "*://twitter.com/*",
+        "*://www.twitter.com/*"
+      ],
+      "js": ["twitter.js"]
     }
   ],
   "web_accessible_resources": [
@@ -23,7 +30,9 @@
       "matches": [
         "*://youtube.com/*",
         "*://www.youtube.com/*",
-        "*://m.youtube.com/*"
+        "*://m.youtube.com/*",
+        "*://twitter.com/*",
+        "*://www.twitter.com/*"
       ],
       "resources": ["images/*.png", "images/*.gif"]
     }

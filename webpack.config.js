@@ -5,7 +5,8 @@ module.exports = {
     mode: "development",
     entry: {
         background: './src/background.ts',
-        youtube: './src/youtube.ts'
+        youtube: './src/youtube.ts',
+        twitter: './src/twitter.ts'
     },
     devtool: 'inline-source-map',
     module: {
