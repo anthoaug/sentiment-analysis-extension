@@ -40,7 +40,7 @@ function observer() {
 
                 icons.appendChild(image);
 
-                fetch(`http://localhost:8000/extension/twitter/${encodeURIComponent(tweetText.textContent)}/`)
+                fetch(`http://localhost:8000/api/extension/twitter/${encodeURIComponent(tweetText.textContent)}/`)
                     .then(response => response.text())
                     .then(data => {
                         if (!sentiments.includes(data)) data = "unknown";

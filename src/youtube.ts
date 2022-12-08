@@ -22,7 +22,7 @@ document.addEventListener("yt-navigate-finish", function (event: Event) {
 
     below.insertBefore(canvas, below.querySelector("#comments"));
 
-    fetch("http://localhost:8000/extension/youtube/" + videoId + "/")
+    fetch("http://localhost:8000/api/extension/youtube/" + videoId + "/")
         .then(response => response.json())
         .then(data => {
             comments = new Map(Object.entries(data["sentiments"]));
